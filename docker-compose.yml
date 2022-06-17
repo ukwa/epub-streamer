@@ -1,0 +1,12 @@
+version: '2'
+
+services:
+  streamer:
+    build:
+      context: .
+      args:
+        http_proxy: ${HTTP_PROXY}
+        https_proxy: ${HTTPS_PROXY}
+    environment:
+      # Internal test systems
+      - "ARK_SERVER=http://staffaccess.dl.bl.uk"
