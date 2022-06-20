@@ -36,6 +36,10 @@ def main(ark_id: str, ark_path:str):
     # Guess mimetype:
     type, encoding = mimetypes.guess_type(ark_path)
     if not type:
-        type = "text/plain"
+        if ark_path:
+            type = "text/plain"
+        else:
+            # Bit of a hack, so PyWB passes us to the ePub reader:
+            type = "application/epub+zip"
 
     return StreamingResponse(iterfile(backend_url), media_type=type)
