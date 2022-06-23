@@ -48,8 +48,13 @@ def StreamerResponse(url: str, ark_path: str):
     return StreamingResponse(iterfile(url), media_type=type)
 
 
+@app.get("/ark:/81055/{ark_id}")
+def get_by_ark(ark_id: str):
+    backend_url = f"{ARK_SERVER}/ark:/81055/{ark_id}"
+    return StreamerResponse(backend_url, None)
+
 @app.get("/ark:/81055/{ark_id}/{ark_path:path}")
-def get_by_ark(ark_id: str, ark_path:str):
+def get_by_ark_and_path(ark_id: str, ark_path:str):
     backend_url = f"{ARK_SERVER}/ark:/81055/{ark_id}"
     return StreamerResponse(backend_url, ark_path)
 
