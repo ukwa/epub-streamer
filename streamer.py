@@ -22,7 +22,7 @@ def StreamerResponse(url: str, ark_path: str):
         r = requests.get(url, stream=True)
         logger.info(f"  {r.status_code}")
         return StreamingResponse(r.iter_content(chunk_size=10*1024),
-                media_type=r.headers['Content-Type'])
+                headers=r.headers)
 
     def iterfile(url): 
         with RemoteZip(url) as z:
