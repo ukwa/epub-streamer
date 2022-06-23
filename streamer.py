@@ -20,7 +20,9 @@ def StreamerResponse(url: str, ark_path: str):
     # Needs to return the actual item even if there's a slash after the ARK.
     if ark_path == None or ark_path == "":
         r = requests.get(url, stream=True)
-        return StreamingResponse(r.iter_content(), media_type=r.headers['content-type'])
+        logger.info(f"  {r.status_code}")
+        return StreamingResponse(r.iter_content(chunk_size=10*1024),
+                media_type=r.headers['Content-Type'])
 
     def iterfile(url): 
         with RemoteZip(url) as z:
@@ -57,6 +59,7 @@ def get_by_ark(ark_id: str):
 @app.get("/ark:/81055/{ark_id}/{ark_path:path}")
 def get_by_ark_and_path(ark_id: str, ark_path:str):
     backend_url = f"{ARK_SERVER}/ark:/81055/{ark_id}"
+    logger.info(f"ark_and_path {backend_url} / {ark_path}")
     return StreamerResponse(backend_url, ark_path)
 
 @app.get("/proxy/{backend_url_and_path:path}")
@@ -70,7 +73,7 @@ def get_by_url(backend_url_and_path:str):
         ark_path = m.group(4)
         ark_path = ark_path.lstrip("/")
 
-    logger.warn(f"{backend_url} / {ark_path}")
+    logger.info(f"by_url {backend_url} / {ark_path}")
 
     return StreamerResponse(backend_url, ark_path)
 
