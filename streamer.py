@@ -16,8 +16,9 @@ logger = logging.getLogger(__name__)
 
 def StreamerResponse(url: str, ark_path: str):
 
-    # TODO: if ark_path is None, proxy the whole file back with the right Content-Type:
-    if ark_path == None:
+    # If ark_path is not set, proxy the whole file back with the right Content-Type:
+    # Needs to return the actual item even if there's a slash after the ARK.
+    if ark_path == None or ark_path == "":
         r = requests.get(url, stream=True)
         return StreamingResponse(r.iter_content(), media_type=r.headers['content-type'])
 
