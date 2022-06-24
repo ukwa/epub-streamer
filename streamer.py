@@ -20,9 +20,11 @@ def StreamerResponse(url: str, ark_path: str):
     # Needs to return the actual item even if there's a slash after the ARK.
     if ark_path == None or ark_path == "":
         r = requests.get(url, stream=True)
-        logger.info(f"  {r.status_code}")
-        return StreamingResponse(r.iter_content(chunk_size=10*1024),
-                headers=r.headers)
+        logger.info(f" Upstream {url} response status code {r.status_code}")
+        return StreamingResponse(
+            r.iter_content(chunk_size=10*1024),
+            status_code=r.status_code,
+            headers=r.headers)
 
     def iterfile(url): 
         with RemoteZip(url) as z:
