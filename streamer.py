@@ -21,11 +21,20 @@ def StreamerResponse(url: str, ark_path: str):
     if ark_path == None or ark_path == "":
         r = requests.get(url, stream=True)
         logger.info(f" Upstream {url} response status code {r.status_code}")
+        # Interject, if we get a 200 that is text/plain, that's an problem. Assume it's an ePub instead.
+        if int(r.status_code/100) == 2 and "text/plain" in r.headers.get("content-type", None):
+            logger.warning(f"HTTP 200 with a text/plain response detected. Assuming it should be application/epub+zip and overriding it.")
+            r.headers["content-type"] = "application/epub+zip"
+        # Return the proxied response:
         return StreamingResponse(
             r.iter_content(chunk_size=10*1024),
             status_code=r.status_code,
             headers=r.headers)
-
+    
+    #
+    # If we've got this far, we're picking a path out of a ZIP:
+    #
+    
     def iterfile(url): 
         with RemoteZip(url) as z:
             if ark_path:
